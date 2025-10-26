@@ -1,0 +1,152 @@
+# =============================================================================
+# Codex CLI Configuration File
+# =============================================================================
+# This file allows you to customize Codex CLI behavior and create different
+# profiles for various use cases. Save this file as ~/.codex/config.toml
+#
+# Usage Examples:
+#   codex                           # Uses default settings below
+#   codex --profile development     # Uses development profile
+#   codex --profile production      # Uses production profile
+#   codex --profile experimental    # Uses experimental profile
+#   codex -c model="gpt-5-codex"    # Override specific setting
+# =============================================================================
+
+# =============================================================================
+# MODEL CONFIGURATION
+# =============================================================================
+# Choose which AI model Codex should use by default
+model = "gpt-5-codex"  # Default model: gpt-5-codex, gpt-5, gpt-4, etc.
+# model_provider = "openai"  # Provider options: "openai" (default), "oss" (for Ollama)
+
+# =============================================================================
+# SANDBOX CONFIGURATION
+# =============================================================================
+# Controls how Codex can interact with your system
+sandbox_mode = "workspace-write"  # Security levels:
+                                  # - "read-only": Can only read files (safest)
+                                  # - "workspace-write": Can read/write in current directory (recommended)
+                                  # - "danger-full-access": Full system access (dangerous!)
+
+# =============================================================================
+# APPROVAL POLICY
+# =============================================================================
+# Controls when Codex asks for your permission before running commands
+ask_for_approval = "on-failure"  # Options:
+                                 # - "untrusted": Ask for approval on potentially dangerous commands
+                                 # - "on-failure": Auto-run commands, ask only if they fail
+                                 # - "on-request": Let Codex decide when to ask
+                                 # - "never": Never ask (dangerous!)
+
+# =============================================================================
+# SHELL ENVIRONMENT
+# =============================================================================
+# Controls which environment variables Codex can access
+[shell_environment_policy]
+inherit = "all"  # Options:
+                 # - "all": Inherit all environment variables
+                 # - "none": Don't inherit any environment variables
+                 # - ["VAR1", "VAR2"]: Inherit only specific variables
+
+# =============================================================================
+# SANDBOX PERMISSIONS
+# =============================================================================
+# Fine-grained control over what Codex can access
+sandbox_permissions = [
+    "disk-full-read-access",  # Can read any file on disk
+    "disk-write-access",      # Can write files (respects sandbox_mode)
+    "network-access"          # Can make network requests
+]
+
+# =============================================================================
+# FEATURE FLAGS
+# =============================================================================
+# Enable/disable specific Codex features
+[features]
+# STABLE FEATURES (safe to use)
+view_image_tool = true          # Allow Codex to view and analyze images
+web_search_request = true       # Enable web search capabilities
+
+# BETA FEATURES (may have bugs)
+apply_patch_freeform = false    # Allow applying patches in freeform mode
+
+# EXPERIMENTAL FEATURES (use with caution)
+unified_exec = false            # Unified execution system (experimental)
+streamable_shell = false        # Stream shell output in real-time (experimental)
+rmcp_client = false             # Model Context Protocol client (experimental)
+experimental_sandbox_command_assessment = false  # Advanced command safety (experimental)
+
+# =============================================================================
+# WEB SEARCH CONFIGURATION
+# =============================================================================
+[web_search]
+enabled = false  # Enable/disable web search capability
+                 # Can also be enabled with: codex --search
+
+# =============================================================================
+# LOGGING CONFIGURATION
+# =============================================================================
+[logging]
+level = "info"  # Logging levels:
+                # - "debug": Very verbose output (useful for troubleshooting)
+                # - "info": Standard output (recommended)
+                # - "warn": Only warnings and errors
+                # - "error": Only errors
+
+# =============================================================================
+# SESSION CONFIGURATION
+# =============================================================================
+[session]
+auto_save = true     # Automatically save session history
+max_history = 100    # Maximum number of commands to keep in history
+
+# =============================================================================
+# CUSTOM PROFILES
+# =============================================================================
+# Create different configurations for different use cases
+# Use with: codex --profile <profile-name>
+
+# DEVELOPMENT PROFILE
+# Good for coding and development work
+[profiles.development]
+model = "gpt-5-codex"                    # Use the best coding model
+sandbox_mode = "workspace-write"         # Allow file modifications
+ask_for_approval = "on-failure"          # Auto-run until failure
+features.web_search_request = true       # Enable web search for documentation
+
+# PRODUCTION PROFILE
+# Safe settings for production environments
+[profiles.production]
+model = "gpt-5-codex"                    # Use reliable model
+sandbox_mode = "read-only"               # Prevent accidental changes
+ask_for_approval = "untrusted"           # Ask before running commands
+features.web_search_request = false      # Disable web access
+
+# EXPERIMENTAL PROFILE
+# For testing new features (use with caution!)
+[profiles.experimental]
+model = "gpt-5-codex"                           # Use latest model
+sandbox_mode = "danger-full-access"             # Full system access
+ask_for_approval = "never"                      # No approval prompts
+features.unified_exec = true                    # Enable experimental execution
+features.streamable_shell = true                # Enable real-time output
+
+# =============================================================================
+# QUICK REFERENCE
+# =============================================================================
+# Command Line Overrides:
+#   codex -c model="gpt-4"                    # Change model
+#   codex -c sandbox_mode="read-only"         # Change sandbox mode
+#   codex --enable web_search_request         # Enable feature
+#   codex --disable view_image_tool           # Disable feature
+#   codex --full-auto                         # Auto-run with workspace write
+#   codex --search                            # Enable web search
+#   codex --sandbox read-only                 # Set sandbox mode
+#   codex --ask-for-approval untrusted        # Set approval policy
+#
+# Common Usage Patterns:
+#   codex --profile development "help me code"     # Development work
+#   codex --profile production "analyze this"      # Safe analysis
+#   codex --full-auto "fix the bugs"               # Auto-fix with safety
+#   codex --search "find React documentation"      # With web search
+# =============================================================================
